@@ -5,6 +5,8 @@ use App\Signin;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
 use App\User;
+use App\Role;
+use App\Permission;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Hash;
@@ -12,8 +14,9 @@ class JwtAuthenticateController extends Controller
 {
     public function index()
     {
-        //return response()->json(['auth'=>Auth::user(), 'users'=>User::all()]);
+        echo "tapan";
     }
+    ////////////////////////////////////////////////////////////
     public function register(Request $request)
     {
         $user=new User();
@@ -32,6 +35,8 @@ class JwtAuthenticateController extends Controller
         //return redirect()->route('profile');
         return response()->json("id created");
     }
+
+    ////////////////////////////////////////////////////////////
     public function authenticate(Request $request)
     {
         $credentials = $request->only('email', 'password');
@@ -52,5 +57,45 @@ class JwtAuthenticateController extends Controller
         return "user ".$nm." is valid";
     }
 
+    ////////////////////////////////////////////////////////////
+    public function createRole(Request $request)
+    {
+        $role = new Role();
+        $role->name = $request->input('name');
+        $role->save();
+        return "role created";
+    }
 
+    ////////////////////////////////////////////////////////////
+    public function createPermission(Request $request)
+    {
+
+        $viewUsers = new Permission();
+        $viewUsers->name = $request->input('name');
+        $viewUsers->save();
+
+        return "permission created";
+
+    }
+    ///////////////////////////////////////////////////////////
+    public function assignRole(Request $request)
+    {
+        $user = User::where('email', '=', $request->input('email'))->first();
+
+
+        $role = Role::where('name', '=', $request->input('role'))->first();
+        //$user->attachRole($request->input('role'));
+        $user->roles()->attach($role->id);
+
+        return "role assigned";
+    }
+    ///////////////////////////////////////////////////////////
+    public function attachPermission(Request $request)
+    {
+        $role = Role::where('name', '=', $request->input('role'))->first();
+        $permission = Permission::where('name', '=', $request->input('name'))->first();
+        $role->attachPermission($permission);
+
+        return "permission given";
+    }
 }

@@ -17,9 +17,17 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::group(['prefix' => 'api', 'middleware' => ['ability:admin,create-users']], function()
+Route::group(['prefix' => 'api2', 'middleware' => ['ability:admin']], function()
 {
     Route::get('users', 'JwtAuthenticateController@index');
 });
 Route::post('auth', 'JwtAuthenticateController@authenticate');
 Route::post('register', 'JwtAuthenticateController@register');
+Route::post('role', 'JwtAuthenticateController@createRole');
+Route::post('permission', 'JwtAuthenticateController@createPermission');
+Route::post('assign-role', 'JwtAuthenticateController@assignRole');
+Route::post('attach-permission', 'JwtAuthenticateController@attachPermission');
+//Route::get('api',['middleware' => 'ability:admin','uses'=>'JwtAuthenticateController@index']);
+Route::group(['prefix'=>'admin'],function(){
+    Route::resource('users','JwtAuthenticateController');
+});

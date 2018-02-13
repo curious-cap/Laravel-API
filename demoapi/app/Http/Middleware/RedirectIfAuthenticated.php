@@ -20,7 +20,11 @@ class RedirectIfAuthenticated
         if (Auth::guard($guard)->check()) {
             return redirect('/home');
         }
+        if (!$request->user()->ability(explode('|', $roles), explode('|', $permissions), array('validate_all' => $validateAll))) {
 
+            return $this->respond('tymon.jwt.invalid', 'token_invalid', 401, 'Unauthorized');
+
+        }
         return $next($request);
     }
 }
